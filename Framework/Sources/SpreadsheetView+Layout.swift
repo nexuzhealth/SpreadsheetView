@@ -111,11 +111,11 @@ extension SpreadsheetView {
                                 numberOfRows: frozenRows,
                                 columnCount: frozenColumns,
                                 rowCount: frozenRows,
-                                insets: .zero)
+                                insets: CGPoint.zero)
     }
 
     func layoutAttributeForColumnHeaderView() -> LayoutAttributes {
-        let insets = circularScrollingOptions.headerStyle == .columnHeaderStartsFirstRow ? CGPoint(x: 0, y: layoutProperties.rowHeightCache.prefix(upTo: frozenRows).reduce(0) { $0 + $1 } + intercellSpacing.height * CGFloat(layoutProperties.frozenRows)) : .zero
+        let insets = circularScrollingOptions.headerStyle == .columnHeaderStartsFirstRow ? CGPoint(x: 0, y: layoutProperties.rowHeightCache.prefix(upTo: frozenRows).reduce(0) { $0 + $1 } + intercellSpacing.height * CGFloat(layoutProperties.frozenRows)) : CGPoint.zero
         return LayoutAttributes(startColumn: 0,
                                 startRow: layoutProperties.frozenRows,
                                 numberOfColumns: layoutProperties.frozenColumns,
@@ -126,7 +126,7 @@ extension SpreadsheetView {
     }
 
     func layoutAttributeForRowHeaderView() -> LayoutAttributes {
-        let insets = circularScrollingOptions.headerStyle == .rowHeaderStartsFirstColumn ? CGPoint(x: layoutProperties.columnWidthCache.prefix(upTo: frozenColumns).reduce(0) { $0 + $1 } + intercellSpacing.width * CGFloat(layoutProperties.frozenColumns), y: 0) : .zero
+        let insets = circularScrollingOptions.headerStyle == .rowHeaderStartsFirstColumn ? CGPoint(x: layoutProperties.columnWidthCache.prefix(upTo: frozenColumns).reduce(0) { $0 + $1 } + intercellSpacing.width * CGFloat(layoutProperties.frozenColumns), y: 0) : CGPoint.zero
         return LayoutAttributes(startColumn: layoutProperties.frozenColumns,
                                 startRow: 0,
                                 numberOfColumns: layoutProperties.numberOfColumns,
@@ -143,7 +143,7 @@ extension SpreadsheetView {
                                 numberOfRows: layoutProperties.numberOfRows,
                                 columnCount: layoutProperties.numberOfColumns * circularScrollScalingFactor.horizontal,
                                 rowCount: layoutProperties.numberOfRows * circularScrollScalingFactor.vertical,
-                                insets: .zero)
+                                insets: CGPoint.zero)
     }
 
     func resetLayoutProperties() -> LayoutProperties {
@@ -191,7 +191,8 @@ extension SpreadsheetView {
                             if mergedCell.contains(existingMergedCell) {
                                 layouts[location] = nil
                             } else {
-                                fatalError("cannot merge cells in a range that overlap existing merged cells")
+                                
+//                                fatalError("cannot merge cells in a range that overlap existing merged cells")
                             }
                         }
                         mergedCell.size = nil
@@ -320,6 +321,21 @@ extension SpreadsheetView {
             }
         } else {
             tableView.state.frame.size.height = frame.height - verticalInset
+        }
+        
+        resetOverlayViewContentSize(contentInset)
+    }
+    
+    func lightResetScrollViewFrame() {
+        let contentInset: UIEdgeInsets
+        if #available(iOS 11.0, *) {
+            #if swift(>=3.2)
+                contentInset = rootView.adjustedContentInset
+            #else
+                contentInset = rootView.value(forKey: "adjustedContentInset") as! UIEdgeInsets
+            #endif
+        } else {
+            contentInset = rootView.contentInset
         }
         
         resetOverlayViewContentSize(contentInset)

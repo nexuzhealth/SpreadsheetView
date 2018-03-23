@@ -451,6 +451,22 @@ public class SpreadsheetView: UIView {
         needsReload = false
         setNeedsLayout()
     }
+    
+    public func lightReloadData() {
+        layoutProperties = resetLayoutProperties()
+
+        rowHeaderView.layoutAttributes = layoutAttributeForRowHeaderView()
+        tableView.layoutAttributes = layoutAttributeForTableView()
+        
+        resetContentSize(of: columnHeaderView)
+        resetContentSize(of: rowHeaderView)
+        resetContentSize(of: tableView)
+        
+        lightResetScrollViewFrame()
+        
+        needsReload = false
+        setNeedsLayout()
+    }
 
     func reloadDataIfNeeded() {
         if needsReload {
